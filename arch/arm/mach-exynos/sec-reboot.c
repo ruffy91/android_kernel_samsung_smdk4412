@@ -11,11 +11,36 @@ extern bool is_cable_attached;
 #ifdef CONFIG_MACH_U1_NA_SPR
 static void cdma_wimax_chk_modem_pwroff(void);
 #endif
+
+
+#ifdef CONFIG_MACH_GD2
+static void camera_ic_poweroff(void)
+{
+	gpio_request(D4_COLD, "D4_COLD");
+
+	if (system_rev < 5) {
+		gpio_direction_output(D4_COLD, GPIO_LEVEL_HIGH);
+		msleep(100);
+		gpio_direction_output(D4_COLD, GPIO_LEVEL_LOW);
+	} else {
+		gpio_direction_output(D4_COLD, GPIO_LEVEL_LOW);
+		msleep(100);
+		gpio_direction_output(D4_COLD, GPIO_LEVEL_HIGH);
+	}
+	pr_info("%s wait for 260ms", __func__);
+	mdelay(260);
+}
+
+#endif
+
 static void sec_power_off(void)
 {
 	int poweroff_try = 0;
 
 	local_irq_disable();
+#ifdef CONFIG_MACH_GD2
+	camera_ic_poweroff();
+#endif
 
 	pr_emerg("%s : cable state=%d\n", __func__, is_cable_attached);
 
@@ -107,6 +132,9 @@ static void cdma_wimax_chk_modem_pwroff(void)
 static void sec_reboot(char str, const char *cmd)
 {
 	local_irq_disable();
+#ifdef CONFIG_MACH_GD2
+	camera_ic_poweroff();
+#endif
 
 	pr_emerg("%s (%d, %s)\n", __func__, str, cmd ? cmd : "(null)");
 

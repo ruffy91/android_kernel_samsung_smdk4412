@@ -192,6 +192,16 @@ obj-$(CONFIG_MIDAS_COMMON)              += sec-common.o\
                                            midas-mhl.o midas-lcd.o midas-sound.o \
                                            midas-wacom.o board-gps-bcm4752.o
 else
+ifeq ($(CONFIG_MACH_GD2),y)
+
+obj-$(CONFIG_MIDAS_COMMON)		+= sec-common.o \
+					   midas-tsp.o board-midas-wlan.o \
+					   midas-camera.o midas-thermistor.o \
+					   midas-mhl.o midas-sound.o
+obj-$(CONFIG_FB_S5P_MIPI_DSIM)		+= board-lcd-mipi.o
+obj-$(CONFIG_FB_S5P_GD2EVF)		+= board-lcd-evf.o
+
+else
 ifeq ($(CONFIG_MACH_SLP_T0_LTE),y)
 obj-$(CONFIG_MIDAS_COMMON)		+= sec-common.o \
 					   board-midas-wlan.o \
@@ -224,6 +234,8 @@ obj-$(CONFIG_KONA_01_BD)                += kona-01-gpio.o kona-01-power.o
 obj-$(CONFIG_GC1_00_BD)			+= gc1-gpio.o gc1-power.o gc1-jack.o
 obj-$(CONFIG_MACH_T0)			+= t0-gpio.o t0-power.o
 obj-$(CONFIG_MACH_BAFFIN)			+= baffin-gpio.o baffin-power.o
+obj-$(CONFIG_MACH_GD2)			+= gd2-power.o
+obj-$(CONFIG_GD2_01_BD)			+= gd2-gpio_01.o
 ifeq ($(CONFIG_MACH_M3),y)
 obj-$(CONFIG_MIDAS_COMMON_BD)		+= m3-gpio.o midas-power.o
 else
@@ -246,6 +258,10 @@ else
 ifeq ($(CONFIG_MACH_KONA_SENSOR), y)
 obj-$(CONFIG_MACH_MIDAS)                += sec-reboot.o
 obj-$(CONFIG_MACH_KONA_SENSOR)          += kona-sensor.o
+else
+ifeq ($(CONFIG_MACH_GD2_SENSOR),y)
+obj-$(CONFIG_MACH_MIDAS)		+= sec-reboot.o
+obj-$(CONFIG_MACH_GD2_SENSOR)		+= gd2-sensor.o
 else
 obj-$(CONFIG_MACH_MIDAS)		+= sec-reboot.o midas-sensor.o
 endif
@@ -357,6 +373,11 @@ obj-$(CONFIG_MSM_SUBSYSTEM_RESTART)	+= subsystem_restart.o
 obj-$(CONFIG_MDM_HSIC_PM)		+= mdm_hsic_pm.o
 ifeq ($(CONFIG_MACH_T0),y)
 obj-$(CONFIG_INPUT_WACOM)		+= midas-wacom.o
+endif
+
+# for MUIC driver
+ifeq ($(CONFIG_MFD_MAX77693),y)
+obj-$(CONFIG_DI_MUIC)				+= sec-switch_max77693_di.o
 endif
 
 obj-$(CONFIG_CORESIGHT_ETM) += coresight.o coresight-etb.o coresight-tpiu.o coresight-funnel.o coresight-etm.o
